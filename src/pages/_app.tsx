@@ -1,13 +1,15 @@
 import { AppProps } from 'next/app';
 import { ThemeProvider } from 'styled-components';
-import { GlobalStyles } from '../styles/global';
 import { theme } from '../styles/theme';
+import { Reset } from 'styled-reset';
+import '@material/react-text-field/dist/text-field.css';
+import '@material/react-material-icon/dist/material-icon.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
+      <Reset />
       <Component {...pageProps} />
-      <GlobalStyles />
     </ThemeProvider>
   );
 }

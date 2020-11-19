@@ -1,3 +1,5 @@
+import HomeContainer from '../containers/Home';
+
 export default function Home() {
-  return <h1>Hello World</h1>;
+  return <HomeContainer />;
 }
