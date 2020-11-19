@@ -8,44 +8,88 @@ import {
   Logo,
   CarouselTitle,
   Carousel,
+  ModalTitle,
+  ModalContent,
 } from './styled';
-import { Card, Loader } from '../../components';
+import {
+  Card,
+  Loader,
+  RestaurantCard,
+  Skeleton,
+  Modal,
+} from '../../components';
 
-interface Restaurant {
-  place_id: string;
-  name: string;
+export interface RestaurantType {
+  place_id?: string;
+  name?: string;
   photos?: string[];
+  rating?: number;
+  vicinity?: string;
+  formatted_address?: string;
+  formatted_phone_number?: string;
+  opening_hours?: {
+    open_now: string;
+  };
 }
 
 const HomeContainer = () => {
-  const restaurants: Restaurant[] = [
+  const restaurants: RestaurantType[] = [
     {
       place_id: '1',
       name: 'Sei Lá',
+      rating: 3,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '2332131',
     },
     {
       place_id: '2',
       name: 'Sei Lá',
+      rating: 4,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '2332131',
     },
     {
       place_id: '3',
       name: 'Sei Lá',
+      rating: 3.5,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '2332131',
     },
     {
       place_id: '4',
       name: 'Sei Lá',
+      rating: 5,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '564654',
     },
     {
       place_id: '5',
       name: 'Sei Lá',
+      rating: 3,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '54646546',
     },
     {
       place_id: '6',
       name: 'Sei Lá',
+      rating: 3,
+      vicinity: 'asdasdasd dasdasd',
+      formatted_address: 'das dadaw dasda dadsad',
+      formatted_phone_number: '5464654',
     },
   ];
 
+  const [restaurantSelected, setrestaurantSelected] = useState<RestaurantType>(
+    {},
+  );
   const [inputValue, setInputValue] = useState('');
+  const [modalOpened, setModalOpened] = useState(false);
+  const [placeId, setPlaceId] = useState(null);
 
   const settings = {
     dots: false,
@@ -55,6 +99,11 @@ const HomeContainer = () => {
     slidesToShow: 4,
     slidesToScroll: 4,
     adaptiveHeight: true,
+  };
+
+  const handleOpenModal = (placeId: string) => {
+    setPlaceId(placeId);
+    setModalOpened(true);
   };
 
   return (
@@ -92,7 +141,38 @@ const HomeContainer = () => {
             <Loader />
           )}
         </Search>
+
+        {restaurants.map((restaurant) => (
+          <RestaurantCard
+            key={restaurant.place_id}
+            onClick={() => handleOpenModal(restaurant.place_id)}
+            restaurant={restaurant}
+          />
+        ))}
       </Container>
+      <Modal open={modalOpened} onClose={() => setModalOpened(!modalOpened)}>
+        {restaurantSelected ? (
+          <>
+            <ModalTitle>{restaurantSelected?.name}</ModalTitle>
+            <ModalContent>
+              {restaurantSelected?.formatted_phone_number}
+            </ModalContent>
+            <ModalContent>{restaurantSelected?.formatted_address}</ModalContent>
+            <ModalContent>
+              {restaurantSelected?.opening_hours?.open_now
+                ? 'Aberto agora'
+                : 'Fechado neste momento'}
+            </ModalContent>
+          </>
+        ) : (
+          <>
+            <Skeleton width="10px" height="10px" />
+            <Skeleton width="10px" height="10px" />
+            <Skeleton width="10px" height="10px" />
+            <Skeleton width="10px" height="10px" />
+          </>
+        )}
+      </Modal>
     </Wrapper>
   );
 };
