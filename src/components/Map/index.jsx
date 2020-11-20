@@ -1,18 +1,11 @@
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GoogleApiWrapper, Map, Marker } from 'google-maps-react';
 
 import { setRestaurants, setRestaurant } from '../../redux/modules/restaurants';
-import { IRestaurant } from '../../domain/restaurants/restaurants';
 
-interface MapContainerProps {
-  google: any;
-  query: string;
-  placeId: string;
-}
-
-export const MapContainer = (props: MapContainerProps) => {
+export const MapContainer = (props) => {
   const dispatch = useDispatch();
   const { restaurants } = useSelector((state) => state.restaurants);
   const [map, setMap] = useState(null);
@@ -99,7 +92,7 @@ export const MapContainer = (props: MapContainerProps) => {
       onRecenter={onMapReady}
       {...props}
     >
-      {restaurants.map((restaurant: IRestaurant) => (
+      {restaurants.map((restaurant) => (
         <Marker
           key={restaurant.place_id}
           name={restaurant.name}
@@ -107,7 +100,6 @@ export const MapContainer = (props: MapContainerProps) => {
             lat: restaurant.geometry.location.lat(),
             lng: restaurant.geometry.location.lng(),
           }}
-
         />
       ))}
     </Map>
