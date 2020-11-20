@@ -1,4 +1,5 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { useSelector } from 'react-redux';
 import TextField, { Input } from '@material/react-text-field';
 import MaterialIcon from '@material/react-material-icon';
 import {
@@ -17,79 +18,18 @@ import {
   RestaurantCard,
   Skeleton,
   Modal,
+  Map,
 } from '../../components';
-
-export interface RestaurantType {
-  place_id?: string;
-  name?: string;
-  photos?: string[];
-  rating?: number;
-  vicinity?: string;
-  formatted_address?: string;
-  formatted_phone_number?: string;
-  opening_hours?: {
-    open_now: string;
-  };
-}
+import { IRestaurant } from '../../domain/restaurants/restaurants';
 
 const HomeContainer = () => {
-  const restaurants: RestaurantType[] = [
-    {
-      place_id: '1',
-      name: 'Sei Lá',
-      rating: 3,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '2332131',
-    },
-    {
-      place_id: '2',
-      name: 'Sei Lá',
-      rating: 4,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '2332131',
-    },
-    {
-      place_id: '3',
-      name: 'Sei Lá',
-      rating: 3.5,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '2332131',
-    },
-    {
-      place_id: '4',
-      name: 'Sei Lá',
-      rating: 5,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '564654',
-    },
-    {
-      place_id: '5',
-      name: 'Sei Lá',
-      rating: 3,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '54646546',
-    },
-    {
-      place_id: '6',
-      name: 'Sei Lá',
-      rating: 3,
-      vicinity: 'asdasdasd dasdasd',
-      formatted_address: 'das dadaw dasda dadsad',
-      formatted_phone_number: '5464654',
-    },
-  ];
-
-  const [restaurantSelected, setrestaurantSelected] = useState<RestaurantType>(
-    {},
+  const { restaurants, restaurantSelected } = useSelector(
+    (state) => state.restaurants,
   );
   const [inputValue, setInputValue] = useState('');
   const [modalOpened, setModalOpened] = useState(false);
   const [placeId, setPlaceId] = useState(null);
+  const [query, setQuery] = useState(null);
 
   const settings = {
     dots: false,
@@ -99,6 +39,12 @@ const HomeContainer = () => {
     slidesToShow: 4,
     slidesToScroll: 4,
     adaptiveHeight: true,
+  };
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setQuery(inputValue);
+    }
   };
 
   const handleOpenModal = (placeId: string) => {
@@ -118,6 +64,7 @@ const HomeContainer = () => {
           >
             <Input
               value={inputValue}
+              onKeyPress={handleKeyPress}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setInputValue(e.target.value)
               }
@@ -128,10 +75,14 @@ const HomeContainer = () => {
             <>
               <CarouselTitle>Na sua Área</CarouselTitle>
               <Carousel {...settings}>
-                {restaurants.map((restaurant) => (
+                {restaurants.map((restaurant: IRestaurant) => (
                   <Card
                     key={restaurant.place_id}
-                    photo={`restaurant-fake${restaurant.place_id}.png`}
+                    photo={
+                      restaurant.photos
+                        ? restaurant.photos[0].getUrl()
+                        : 'restaurant-fake.png'
+                    }
                     title={restaurant.name}
                   />
                 ))}
@@ -142,7 +93,7 @@ const HomeContainer = () => {
           )}
         </Search>
 
-        {restaurants.map((restaurant) => (
+        {restaurants.map((restaurant: IRestaurant) => (
           <RestaurantCard
             key={restaurant.place_id}
             onClick={() => handleOpenModal(restaurant.place_id)}
@@ -150,6 +101,7 @@ const HomeContainer = () => {
           />
         ))}
       </Container>
+      <Map query={query} placeId={placeId} />
       <Modal open={modalOpened} onClose={() => setModalOpened(!modalOpened)}>
         {restaurantSelected ? (
           <>
@@ -159,7 +111,7 @@ const HomeContainer = () => {
             </ModalContent>
             <ModalContent>{restaurantSelected?.formatted_address}</ModalContent>
             <ModalContent>
-              {restaurantSelected?.opening_hours?.open_now
+              {restaurantSelected?.opening_hours?.isOpen()
                 ? 'Aberto agora'
                 : 'Fechado neste momento'}
             </ModalContent>

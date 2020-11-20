@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ReactStars from 'react-rating-stars-component';
-import { RestaurantType } from '../../containers/Home';
+import { IRestaurant } from '../../domain/restaurants/restaurants';
 
-// import Skeleton from '../Skeleton';
+import Skeleton from '../Skeleton';
 
 import {
   Restaurant,
@@ -13,7 +13,7 @@ import {
 } from './styled';
 
 interface RestaurantCardProps {
-  restaurant: RestaurantType;
+  restaurant: IRestaurant;
   onClick: () => void;
 }
 
@@ -35,11 +35,15 @@ const RestaurantCard = ({ restaurant, onClick }: RestaurantCardProps) => {
       </RestaurantInfo>
       <RestaurantPhoto
         imageLoaded={imageLoaded}
-        src="restaurant-fake1.png"
+        src={
+          restaurant.photos
+            ? restaurant.photos[0].getUrl()
+            : 'restaurant-fake.png'
+        }
         onLoad={() => setImageLoaded(true)}
         alt="Foto do Restaurante"
       />
-      {/* {!imageLoaded && <Skeleton width="100px" height="100px" />} */}
+      {!imageLoaded && <Skeleton width="100px" height="100px" />}
     </Restaurant>
   );
 };
